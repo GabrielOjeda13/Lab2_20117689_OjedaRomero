@@ -60,22 +60,12 @@ getB([_|[_|[_|[_|[B|_]]]]],B).
 getDepthRgb([_|[_|[_|[_|[_|[Depth|_]]]]]],Depth).
 
 
-
 %Predicado isBitmap?
-elementoEnLista([],_):- false, !.
-elementoEnLista([_,_,X,_|Y],Elemento):- X = Elemento; elementoEnLista(Y,Elemento).
-elementoEnLista2([]):- false, !.
-elementoEnLista2([X|Y]):-
-    elementoEnLista(X,0),
-    elementoEnLista2(Y),
-    elementoEnLista(X,1);
-    elementoEnLista2(Y).
+isBitmap(PixelBit):- getBit(PixelBit, Bit),
+    				(Bit == 0 ; Bit == 1).
 
-
-
-getobenListaPixels([[_,_,bit,_]|PixelRestante]):- 
-    pixbit(_, _,bit,_,_),
-    getobenListaPixels(PixelRestante).
+validePixelIsBitmap([]):- !.
+validePixelIsBitmap([X|Y]):- isBitmap(X), validePixelIsBitmap(Y).
 
 imagenIsBimap(Img):-
-    getListaPixels(Img,ListaPixeles), getobenListaPixels(ListaPixeles).
+    getListaPixels(Img,ListaPixeles), validePixelIsBitmap(ListaPixeles).
