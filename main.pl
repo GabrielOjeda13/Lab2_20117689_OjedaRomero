@@ -50,7 +50,7 @@ getBit([_|[_|[Bit|_]]],Bit).
 getDepthBit([_|[_|[_|[Depth|_]]]],Depth).
 
 %Selectores PixHex.
-getHexH([_|[_|[Hex|_]]],Hex).
+getHex([_|[_|[Hex|_]]],Hex).
 getDepthHex([_|[_|[_|[Depth|_]]]],Depth).
 
 %Selectores PixRgb.
@@ -69,3 +69,14 @@ validePixelIsBitmap([X|Y]):- isBitmap(X), validePixelIsBitmap(Y).
 
 imagenIsBimap(Img):-
     getListaPixels(Img,ListaPixeles), validePixelIsBitmap(ListaPixeles).
+    
+
+%Predicado isHexmap?
+isHexmap(PixelHex):- getHex(PixelHex, Hex),
+    				string(Hex).
+
+validePixelIsHexmap([]):- !.
+validePixelIsHexmap([X|Y]):- isHexmap(X), validePixelIsHexmap(Y).
+
+imagenIsHexmap(Img):-
+    getListaPixels(Img,ListaPixeles), validePixelIsHexmap(ListaPixeles).
