@@ -59,11 +59,10 @@ getG([_|[_|[_|[G|_]]]],G).
 getB([_|[_|[_|[_|[B|_]]]]],B).
 getDepthRgb([_|[_|[_|[_|[_|[Depth|_]]]]]],Depth).
 
-
+%%--------------- PERTENENCIAS ---------------.
 %Predicado isBitmap?
 isBitmap(PixelBit):- getBit(PixelBit, Bit),
     				(Bit == 0 ; Bit == 1).
-
 validePixelIsBitmap([]):- !.
 validePixelIsBitmap([X|Y]):- isBitmap(X), validePixelIsBitmap(Y).
 
@@ -74,9 +73,33 @@ imagenIsBimap(Img):-
 %Predicado isHexmap?
 isHexmap(PixelHex):- getHex(PixelHex, Hex),
     				string(Hex).
-
 validePixelIsHexmap([]):- !.
 validePixelIsHexmap([X|Y]):- isHexmap(X), validePixelIsHexmap(Y).
 
 imagenIsHexmap(Img):-
     getListaPixels(Img,ListaPixeles), validePixelIsHexmap(ListaPixeles).
+
+%Predicado isPixmap? (Pixel RGB).
+isPixmap(PixelRgb):- getR(PixelRgb, R),
+    				getG(PixelRgb, G),
+    				getB(PixelRgb, B),
+    				(R >= 0, R=< 255),
+					(G >= 0, G=< 255),
+					(B >= 0, B=< 255).
+validePixelIsPixmap([]):- !.
+validePixelIsPixmap([X|Y]):- isPixmap(X), validePixelIsPixmap(Y).
+
+imageIsPixmap(Img):-
+    getListaPixels(Img,ListaPixeles), validePixelIsPixmap(ListaPixeles).
+
+
+
+
+
+
+
+
+
+
+
+
