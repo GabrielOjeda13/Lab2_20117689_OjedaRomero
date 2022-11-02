@@ -156,3 +156,62 @@ imageFlipH(Img, NewImg) :-
     (imageIsPixmap(Img), pixelsFlipHRgb(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg))).
 
 
+
+%PREDICADO QUE DA VUELTA UNA IMAGEN VERTICALMENTE.
+
+%----- PIXBIT -----
+pixelRotateVBit(Pixel, Alto, NewPixel):-
+    getX(Pixel, X),
+    getY(Pixel, Y),
+    getBit(Pixel, Bit),
+    getDepthBit(Pixel, D),
+    (Y < Alto-1, NewY is Y + 1; NewY is Y - 1),
+    pixbit(X, NewY, Bit, D, NewPixel).
+
+%HECHO
+pixelsFlipVBit([], _, []):- !.
+pixelsFlipVBit([Pixel|Cola], Alto, [NewPixel|Cola2]) :-
+    pixelRotateVBit(Pixel, Alto, NewPixel),
+    pixelsFlipVBit(Cola,Alto,Cola2).
+
+
+%----- PIXHEX -----
+pixelRotateVHex(Pixel, Alto, NewPixel):-
+    getX(Pixel, X),
+    getY(Pixel, Y),
+    getHex(Pixel, Hex),
+    getDepthHex(Pixel, D),
+    (Y < Alto-1, NewY is Y + 1; NewY is Y - 1),
+    pixhex(X, NewY, Hex, D, NewPixel).
+
+%HECHO
+pixelsFlipVHex([], _, []):- !.
+pixelsFlipVHex([Pixel|Cola], Alto, [NewPixel|Cola2]) :-
+    pixelRotateVHex(Pixel, Alto, NewPixel),
+    pixelsFlipVHex(Cola,Alto,Cola2).
+
+%----- PIXRGB -----
+pixelRotateVRgb(Pixel, Alto, NewPixel):-
+    getX(Pixel, X),
+    getY(Pixel, Y),
+    getR(Pixel, R),
+    getG(Pixel, G),
+    getB(Pixel, B),
+    getDepthRgb(Pixel, D),
+    (Y < Alto-1, NewY is Y + 1; NewY is Y - 1),
+    pixrgb(X, NewY, R, G, B, D, NewPixel).
+
+%HECHO
+pixelsFlipHVRgb([], _, []):- !.
+pixelsFlipHVRgb([Pixel|Cola], Alto, [NewPixel|Cola2]) :-
+    pixelRotateVRgb(Pixel, Alto, NewPixel),
+    pixelsFlipHVRgb(Cola,Alto,Cola2).
+
+imageFlipV(Img, NewImg) :-
+    getListaPixels(Img, ListaPixeles),
+    getWidth(Img, Ancho),
+    getHeigth(Img, Alto),
+    ((imagenIsBimap(Img), pixelsFlipVBit(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg),!);
+    (imagenIsHexmap(Img), pixelsFlipVHex(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg),!);
+    (imageIsPixmap(Img), pixelsFlipHVRgb(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg))).
+
