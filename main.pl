@@ -97,7 +97,7 @@ validePixelIsPixmap([X|Y]):- isPixmap(X), validePixelIsPixmap(Y).
 imageIsPixmap(Img):-
     getListaPixels(Img,ListaPixeles), validePixelIsPixmap(ListaPixeles).
 
-%PREDICADO QUE DA VUELTA UNA IMAGEN HORIZONTALMENTE.
+%-------- PREDICADO QUE DA VUELTA UNA IMAGEN HORIZONTALMENTE --------.
 
 %----- PIXBIT -----
 pixelRotateHBit(Pixel, Ancho, NewPixel):-
@@ -157,7 +157,7 @@ imageFlipH(Img, NewImg) :-
 
 
 
-%PREDICADO QUE DA VUELTA UNA IMAGEN VERTICALMENTE.
+%-------- PREDICADO QUE DA VUELTA UNA IMAGEN VERTICALMENTE --------.
 
 %----- PIXBIT -----
 pixelRotateVBit(Pixel, Alto, NewPixel):-
@@ -215,7 +215,7 @@ imageFlipV(Img, NewImg) :-
     (imagenIsHexmap(Img), pixelsFlipVHex(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg));
     (imageIsPixmap(Img), pixelsFlipHVRgb(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg))).
 
-%PREDICADO QUE RECORTA UNA IMAGEN.
+%-------- PREDICADO QUE RECORTA UNA IMAGEN --------.
 
 %----- PIXBIT -----
 cropbit([],_,_,_,_,[]).
@@ -250,3 +250,65 @@ imageCrop(Img, X, Y, X1, Y1, NewImg):-
      (imagenIsHexmap(Img), crophex(ListaPixeles, X, Y, X1, Y1, NewListPixels));
      (imageIsPixmap(Img), croprgb(ListaPixeles, X, Y, X1, Y1, NewListPixels))),
      image(X2, Y2, NewListPixels, NewImg).
+
+
+%-------- PREDICADO QUE TRANSFORMA UNA IMAGEN RGB A HEXADECIMAL --------.
+imageRGBToHex(Img, NewImg):-
+    image(X, Y, ListaPixels, Img),
+    imageRGBToHex(ListaPixels, NewListaPixels),
+    image(X, Y, NewListaPixels, NewImg).
+
+imageRGBToHex([],[]).
+imageRGBToHex([Cabeza|Cola], PixelesHex):-
+    imageRGBToHex(Cola, PixelesAntes),
+    pixrgb(X, Y, R, G, B, D, Cabeza),
+    dec_to_hex(R, Rojo),
+    dec_to_hex(G, Verde),
+    dec_to_hex(B, Azul),
+    string_concat(R, G, RG),
+    string_concat(RG, B, RGB),
+    pixhex(X, Y, RGB, D, Pixeles),
+    append([Pixeles], PixelesAntes, PixelesHex).
+
+dec_to_hex(Value,Atom):-
+    Value =< 0xFF, !,
+    format(atom(Atom_lower),'|`0t~16r~2|',Value),
+    upcase_atom(Atom_lower,Atom).
+
+%-------- PREDICADO QUE CREA UN HISTOGRAMA --------.
+imageToHistogram(Img, Histograma):-
+    getListaPixels(Img, ListaPixeles),
+    histogramaBit(ListaPixeles, Histograma).
+
+histogramaBit([],[]). %caso base
+histogramaBit(ListaPixeles, HSalida) :-
+    countElement(ListaPixeles, 0, N),
+    countElement(ListaPixeles, 1, N1), 
+    append([[0,N]],[[1,N1]], HSalida).
+
+countElement([], _, 0).
+countElement([Elemento|RestoIn], Valor, N) :-
+    countElement(RestoIn, Valor, Acc),
+    getBit(Elemento, Color),
+    (Color = Valor, 
+    N is Acc + 1;
+    N is Acc).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
