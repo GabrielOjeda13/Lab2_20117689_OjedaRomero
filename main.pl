@@ -151,8 +151,8 @@ imageFlipH(Img, NewImg) :-
     getListaPixels(Img, ListaPixeles),
     getWidth(Img, Ancho),
     getHeigth(Img, Alto),
-    ((imagenIsBimap(Img), pixelsFlipHBit(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg),!);
-    (imagenIsHexmap(Img), pixelsFlipHHex(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg),!);
+    ((imagenIsBimap(Img), pixelsFlipHBit(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg));
+    (imagenIsHexmap(Img), pixelsFlipHHex(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg));
     (imageIsPixmap(Img), pixelsFlipHRgb(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg))).
 
 
@@ -211,7 +211,42 @@ imageFlipV(Img, NewImg) :-
     getListaPixels(Img, ListaPixeles),
     getWidth(Img, Ancho),
     getHeigth(Img, Alto),
-    ((imagenIsBimap(Img), pixelsFlipVBit(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg),!);
-    (imagenIsHexmap(Img), pixelsFlipVHex(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg),!);
+    ((imagenIsBimap(Img), pixelsFlipVBit(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg));
+    (imagenIsHexmap(Img), pixelsFlipVHex(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg));
     (imageIsPixmap(Img), pixelsFlipHVRgb(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg))).
 
+%PREDICADO QUE RECORTA UNA IMAGEN.
+
+%----- PIXBIT -----
+cropbit([],_,_,_,_,[]).
+cropbit([Cabeza|Cola], X, Y, X1, Y1, PixelesFinales):-
+    cropbit(Cola, X, Y, X1, Y1, PixelesOriginales),
+    pixbit(Ancho, Alto,_,_ ,Cabeza),
+    ( X =< Ancho, Ancho =< X1, 
+      Y =< Alto, Alto =< Y1 -> append(Cabeza, PixelesOriginales, PixelesFinales);
+    append([], PixelesOriginales, PixelesFinales)).
+
+%----- PIXHEX -----
+crophex([],_,_,_,_,[]).
+crophex([Cabeza|Cola], X, Y, X1, Y1, PixelesFinales):-
+    crophex(Cola, X, Y, X1, Y1, PixelesOriginales),
+    pixhex(Ancho, Alto,_,_ ,Cabeza),
+    ( X =< Ancho, Ancho =< X1, 
+      Y =< Alto, Alto =< Y1 -> append(Cabeza, PixelesOriginales, PixelesFinales);
+    append([], PixelesOriginales, PixelesFinales)).
+
+%----- PIXRGB -----
+croprgb([],_,_,_,_,[]).
+croprgb([Cabeza|Cola], X, Y, X1, Y1, PixelesFinales):-
+    croprgb(Cola, X, Y, X1, Y1, PixelesOriginales),
+    pixrgb(Ancho, Alto, _, _, _, _, Cabeza),
+    ( X =< Ancho, Ancho =< X1, 
+      Y =< Alto, Alto =< Y1 -> append(Cabeza, PixelesOriginales, PixelesFinales);
+    append([], PixelesOriginales, PixelesFinales)).
+
+imageCrop(Img, X, Y, X1, Y1, NewImg):-
+    image(X2, Y2, ListaPixeles, Img), 
+    ((imagenIsBimap(Img), cropbit(ListaPixeles, X, Y, X1, Y1, NewListPixels));
+     (imagenIsHexmap(Img), crophex(ListaPixeles, X, Y, X1, Y1, NewListPixels));
+     (imageIsPixmap(Img), croprgb(ListaPixeles, X, Y, X1, Y1, NewListPixels))),
+     image(X2, Y2, NewListPixels, NewImg).
