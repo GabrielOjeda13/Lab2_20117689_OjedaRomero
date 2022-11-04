@@ -2,47 +2,43 @@
 % 20.117.689-1
 % Laboratorio 2 Prolog
 
+%--------------- PREDICOS BASE PARA OTROS PREDICADOS ---------------.
 
-:-use_module(tdapixbit).
-:-use_module(tdapixhex).
-:-use_module(tdapixrgb).
-:-use_module(predicadosbase).
-:-use_module(tdaimagen).
+%%--------------- SELECTORES ---------------.
+%Generales pixels
+getX([X|_],X).
+getY([_|[Y|_]],Y).
+
+%%--------------- AGREGAR ELEMENTO EN LISTA ---------------.
+appendElement( Elemento, [], [Elemento]).
+appendElement( Elemento, Lista, [Elemento|Lista]).
 
 
-%% Meta Primaria: imageFlip
-%% Meta Secundaria: imagen ; imagen rotada
-%% Descripcion: Predicado que permite rotar una imagen horizontalmente.
+%-------- PREDICADO QUE DA VUELTA UNA IMAGEN HORIZONTALMENTE --------.
+
+
 imageFlipH(Img, NewImg) :-
     getListaPixels(Img, ListaPixeles),
     getWidth(Img, Ancho),
     getHeigth(Img, Alto),
-    ((imagenIsBimap(Img), pixelsFlipHBit(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg));
-    (imagenIsHexmap(Img), pixelsFlipHHex(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg));
-    (imageIsPixmap(Img), pixelsFlipHRgb(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg))).
+    ((imagenIsBimap(Img), pixelsFlipHBit(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels,Â NewImg));
+    (imagenIsHexmap(Img), pixelsFlipHHex(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels,Â NewImg));
+    (imageIsPixmap(Img), pixelsFlipHRgb(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels,Â NewImg))).
 
 
-%% Meta Primaria: imageFlipV
-%% Meta Secundaria: imagen ; imagen rotada
-%% Descripcion: Predicado que permite rotar una imagen Verticalmente.
+
+%-------- PREDICADO QUE DA VUELTA UNA IMAGEN VERTICALMENTE --------.
+
+
 imageFlipV(Img, NewImg) :-
     getListaPixels(Img, ListaPixeles),
     getWidth(Img, Ancho),
     getHeigth(Img, Alto),
-    ((imagenIsBimap(Img), pixelsFlipVBit(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg));
-    (imagenIsHexmap(Img), pixelsFlipVHex(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg));
-    (imageIsPixmap(Img), pixelsFlipHVRgb(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels, NewImg))).
+    ((imagenIsBimap(Img), pixelsFlipVBit(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels,Â NewImg));
+    (imagenIsHexmap(Img), pixelsFlipVHex(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels,Â NewImg));
+    (imageIsPixmap(Img), pixelsFlipHVRgb(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels,Â NewImg))).
 
-
-%% Meta Primaria: imageCrop
-%% Meta Secundaria: imagen ; imagen recortada
-%% Descripcion: Predicado que permite rocortar una imagen.
-imageCrop(Img, X, Y, X1, Y1, NewImg):-
-    image(X2, Y2, ListaPixeles, Img),
-    ((imagenIsBimap(Img), cropbit(ListaPixeles, X, Y, X1, Y1, NewListPixels));
-     (imagenIsHexmap(Img), crophex(ListaPixeles, X, Y, X1, Y1, NewListPixels));
-     (imageIsPixmap(Img), croprgb(ListaPixeles, X, Y, X1, Y1, NewListPixels))),
-     image(X2, Y2, NewListPixels,NewImg).
+%-------- PREDICADO QUE RECORTA UNA IMAGEN --------.
 
 %----- PIXBIT -----
 cropbit([],_,_,_,_,[]).
@@ -71,9 +67,15 @@ croprgb([Cabeza|Cola], X, Y, X1, Y1, PixelesFinales):-
       Y =< Alto, Alto =< Y1 -> append(Cabeza, PixelesOriginales, PixelesFinales);
     append([], PixelesOriginales, PixelesFinales)).
 
+imageCrop(Img, X, Y, X1, Y1, NewImg):-
+    image(X2, Y2, ListaPixeles, Img),
+    ((imagenIsBimap(Img), cropbit(ListaPixeles, X, Y, X1, Y1, NewListPixels));
+     (imagenIsHexmap(Img), crophex(ListaPixeles, X, Y, X1, Y1, NewListPixels));
+     (imageIsPixmap(Img), croprgb(ListaPixeles, X, Y, X1, Y1, NewListPixels))),
+     image(X2, Y2, NewListPixels,Â NewImg).
 
-%% Meta Primaria: imageRGB
-%% Descripcion: Predicado transforma una imagen a Hexadecimal.
+
+%-------- PREDICADO QUE TRANSFORMA UNA IMAGEN RGB A HEXADECIMAL --------.
 imageRGBToHex(Img, NewImg):-
     image(X, Y, ListaPixels, Img),
     imageRGBToHex(ListaPixels, NewListaPixels),
@@ -96,9 +98,7 @@ dec_to_hex(Value,Atom):-
     format(atom(Atom_lower),'|`0t~16r~2|',Value),
     upcase_atom(Atom_lower,Atom).
 
-
-%% Meta Primaria: imageToHistogram
-%% Descripcion: Predicado que crea un histograma.
+%-------- PREDICADO QUE CREA UN HISTOGRAMA --------.
 imageToHistogram(Img, Histograma):-
     getListaPixels(Img, ListaPixeles),
     histogramaBit(ListaPixeles, Histograma).
@@ -118,10 +118,9 @@ countElement([Elemento|RestoIn], Valor, N) :-
     N is Acc).
 
 
-%% Meta Primaria: imageChangePixel.
-%% Meta Secundaria: imagen ; pixels
-%% Descripcion: Predicado que cambia el pixel de una imagen.
-%% imagen Verticalmente.
+
+
+%-------- PREDICADO QUE CAMBIA EL PIXEL DE UNA IMAGEN --------.
 imageChangePixel(Img, PixelChange, NewImg):-
     image(Ancho, Alto, ListaPixels, Img),
     ((imagenIsBimap(Img), changePixelBit(ListaPixels, PixelChange, NewListPixels));
@@ -158,7 +157,6 @@ changePixelRgb([Pixel|Resto], PixelChange, NewListPixels):-
 
 
 %% Meta Primaria: imageInvertColorRGB
-%% Descripcion: Predicado que invertir el color de un pixel rgb.
 imageInvertColorRGB(Pixel, NewPixel):-
     pixrgb(X, Y, R, G, B, D, Pixel),
     NewR is 255 - R,

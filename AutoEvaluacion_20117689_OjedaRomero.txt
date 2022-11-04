@@ -1,0 +1,17 @@
+REQUISITOS NO FUNCIONALES		EVALUACIÓN
+1.-Autoevaluación				1
+2.-Implementación en Prolog		1
+4.-Funciones comentadas			0.5
+5.-Historial de Github			1
+6.-Ejemplos de uso			1
+7.-Informe			1
+
+
+REQUISITOS FUNCIONALES 			EVALUACIÓN
+1.-TDA's					1
+2.-TDA Pixbit				1
+3.-TDA Pixhex				1
+4.-TDA Pixrgb				1
+5.-TDA image				0.5
+6.-FuncionesBase				0.5
+7.-Main					0.5

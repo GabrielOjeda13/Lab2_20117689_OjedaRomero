@@ -10,6 +10,7 @@
 :-use_module(tdaimagen).
 
 
+
 %% Meta Primaria: imageFlip
 %% Meta Secundaria: imagen ; imagen rotada
 %% Descripcion: Predicado que permite rotar una imagen horizontalmente.
