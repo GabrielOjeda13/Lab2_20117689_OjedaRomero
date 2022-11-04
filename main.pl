@@ -331,3 +331,12 @@ changePixelRgb([Pixel|Resto], PixelChange, NewListPixels):-
     (X = X1, Y = Y1,
     append([PixelChange], ListaPixels, NewListPixels);
     append([Pixel], ListaPixels, NewListPixels)).
+
+
+%% Meta Primaria: imageInvertColorRGB
+imageInvertColorRGB(Pixel, NewPixel):-
+    pixrgb(X, Y, R, G, B, D, Pixel),
+    NewR is 255 - R,
+    NewG is 255 - G,
+    NewB is 255 - B,
+    pixrgb(X, Y, NewR, NewG, NewB, D, NewPixel).
