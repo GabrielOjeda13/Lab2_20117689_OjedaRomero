@@ -3,11 +3,11 @@
 % Laboratorio 2 Prolog
 
 
-:-use_module(tdapixbit).
-:-use_module(tdapixhex).
-:-use_module(tdapixrgb).
-:-use_module(predicadosbase).
-:-use_module(tdaimagen).
+:-module(tdapixbit).
+:-module(tdapixhex).
+:-module(tdapixrgb).
+:-module(predicadosbase).
+:-module(tdaimagen).
 
 
 %% Meta Primaria: imageFlip
@@ -209,3 +209,25 @@ rotarPixelRgb([Pixel|Cola],Ancho,[NewPixel|Cola2]):-
     getDepthRgb(Pixel,Depth),
     pixrgb(X2, Y2, R,G,B, Depth,NewPixel),
     rotarPixelRgb(Cola,Ancho,Cola2).
+
+
+%% Meta Primaria: imageToString
+%% Meta Secundaria: imagen ; imagen en string
+%% Descripcion: Predicado que transforma una imagen a string.
+pixelStringBit([], _, _, _):- !.
+pixelStringBit([Pixel|Resto], Ancho, Count, ListaPixelString):-
+		pixbit(_, _, Bit, _, Pixel),
+		(Count = 0, NewCount is Count + 1,
+            string_concat(Bit,"\t", NewListaPixelString);
+            Count < Ancho, Count > 0, NewCount is Count + 1,
+            string_concat(Bit,"\t", NewPixelString),
+            string_concat(NewPixelString, ListaPixelString, NewListaPixelString);
+		NewCount is Count + 1,
+            string_concat(Bit,"\n", NewPixelString),
+            string_concat(NewPixelString, ListaPixelString, NewListaPixelString)),
+            pixelStringBit(Resto, Ancho, NewCount, NewListaPixelString).
+
+imageToString([], "").
+imageToString(Img, NewImgStr):-
+		image(Ancho, _, ListaPixels, Img),
+		pixelStringBit(ListaPixels, Ancho, 0, NewImgStr).
