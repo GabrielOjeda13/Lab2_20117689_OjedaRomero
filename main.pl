@@ -4,7 +4,7 @@
 
 %%FUNCIONES AUX
 appendElement( Elemento, [], [Elemento]).
-appendElement( Elemento, Lista [Elemento|Lista]).
+appendElement( Elemento, Lista, [Elemento|Lista]).
 
 
 %%--------------- VARIABLES GENERALES ---------------.
@@ -297,18 +297,37 @@ countElement([Elemento|RestoIn], Valor, N) :-
 
 
 
+%-------- PREDICADO QUE CAMBIA EL PIXEL DE UNA IMAGEN --------.
+imageChangePixel(Img, PixelChange, NewImg):-
+    image(Ancho, Alto, ListaPixels, Img),
+    ((imagenIsBimap(Img), changePixelBit(ListaPixels, PixelChange, NewListPixels));
+     (imagenIsHexmap(Img), changePixelHex(ListaPixels, PixelChange, NewListPixels));
+     (imageIsPixmap(Img), changePixelRgb(ListaPixels, PixelChange, NewListPixels))),
+    image(Ancho, Alto, NewListPixels, NewImg).
 
+changePixelBit([], _, []).
+changePixelBit([Pixel|Resto], PixelChange, NewListPixels):-
+    changePixelBit(Resto, PixelChange, ListaPixels),
+    pixbit(X, Y, _, _, Pixel),
+    pixbit(X1, Y1, _, _, PixelChange),
+    (X = X1, Y = Y1,
+    append([PixelChange], ListaPixels, NewListPixels);
+    append([Pixel], ListaPixels, NewListPixels)).
 
+changePixelHex([], _, []).
+changePixelHex([Pixel|Resto], PixelChange, NewListPixels):-
+    changePixelHex(Resto, PixelChange, ListaPixels),
+    pixhex(X, Y, _, _, Pixel),
+    pixhex(X1, Y1, _, _, PixelChange),
+    (X = X1, Y = Y1,
+    append([PixelChange], ListaPixels, NewListPixels);
+    append([Pixel], ListaPixels, NewListPixels)).
 
-
-
-
-
-
-
-
-
-
-
-
-
+changePixelRgb([], _, []).
+changePixelRgb([Pixel|Resto], PixelChange, NewListPixels):-
+    changePixelRgb(Resto, PixelChange, ListaPixels),
+    pixrgb(X, Y, _, _, _, _, Pixel),
+    pixrgb(X1, Y1, _, _, _, _, PixelChange),
+    (X = X1, Y = Y1,
+    append([PixelChange], ListaPixels, NewListPixels);
+    append([Pixel], ListaPixels, NewListPixels)).
