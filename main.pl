@@ -121,7 +121,6 @@ countElement([Elemento|RestoIn], Valor, N) :-
 %% Meta Primaria: imageChangePixel.
 %% Meta Secundaria: imagen ; pixels
 %% Descripcion: Predicado que cambia el pixel de una imagen.
-%% imagen Verticalmente.
 imageChangePixel(Img, PixelChange, NewImg):-
     image(Ancho, Alto, ListaPixels, Img),
     ((imagenIsBimap(Img), changePixelBit(ListaPixels, PixelChange, NewListPixels));
@@ -165,3 +164,48 @@ imageInvertColorRGB(Pixel, NewPixel):-
     NewG is 255 - G,
     NewB is 255 - B,
     pixrgb(X, Y, NewR, NewG, NewB, D, NewPixel).
+
+
+%% Meta Primaria: imageRotate90
+%% Meta Secundaria: imagen ; imagen rotada
+%% Descripcion: Predicado que permite rotar una imagen en 90 grados.
+imageRotate90(Img,NewImg):-
+	getListaPixels(Img,ListaPixels),
+	getWidth(Img,Ancho),
+	getHeigth(Img,Alto),
+    ((imagenIsBimap(Img), rotarPixelBit(ListaPixels, Ancho, NewListaPixels));
+     (imagenIsHexmap(Img), rotarPixelHex(ListaPixels, Ancho, NewListaPixels));
+     (imageIsPixmap(Img), rotarPixelRgb(ListaPixels, Ancho, NewListaPixels))),
+    image( Alto, Ancho,NewListaPixels, NewImg).
+
+rotarPixelBit([],_,[]).
+rotarPixelBit([Pixel|Cola],Ancho,[NewPixel|Cola2]):-
+    getX(Pixel,X),getY(Pixel,Y),
+    X2 is Y,
+    Y2 is Ancho-1-X,
+    getBit(Pixel,Bit),
+    getDepthBit(Pixel,Depth),
+    pixbit(X2, Y2, Bit, Depth,NewPixel),
+    rotarPixelBit(Cola,Ancho,Cola2).
+
+rotarPixelHex([],_,[]).
+rotarPixelHex([Pixel|Cola],Ancho,[NewPixel|Cola2]):-
+    getX(Pixel,X),getY(Pixel,Y),
+    X2 is Y,
+    Y2 is Ancho-1-X,
+    getHex(Pixel,Hex),
+    getDepthHex(Pixel,Depth),
+    pixhex(X2, Y2, Hex, Depth,NewPixel),
+    rotarPixelHex(Cola,Ancho,Cola2).
+
+rotarPixelRgb([],_,[]).
+rotarPixelRgb([Pixel|Cola],Ancho,[NewPixel|Cola2]):-
+    getX(Pixel,X),getY(Pixel,Y),
+    X2 is Y,
+    Y2 is Ancho-1-X,
+    getR(Pixel,R),
+    getG(Pixel,G),
+    getB(Pixel,B),
+    getDepthRgb(Pixel,Depth),
+    pixrgb(X2, Y2, R,G,B, Depth,NewPixel),
+    rotarPixelRgb(Cola,Ancho,Cola2).
