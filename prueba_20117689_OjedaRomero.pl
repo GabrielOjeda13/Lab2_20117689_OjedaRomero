@@ -1,6 +1,7 @@
 % Gabriel Ojeda
 % 20.117.689-1
 % Laboratorio 2 Prolog
+% ---------- COMODÍN ----------.
 
 /*
 
@@ -86,7 +87,7 @@ pixrgb( 0, 1, 20, 20, 20, 20, P2),
 pixrgb( 1, 0, 30, 30, 30, 30, P3), 
 pixrgb( 1, 1, 40, 40, 40, 40, P4), 
 image( 2, 2, [P1, P2, P3, P4], I1), 
-imageInvertColorRGB(P2, P2_modificado),
+imageInvertColorRGB(P2, P2_modificado), 
 imageChangePixel(I1, P2_modificado, I2).
 
 

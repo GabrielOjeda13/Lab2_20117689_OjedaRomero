@@ -3,11 +3,238 @@
 % Laboratorio 2 Prolog
 
 
-:-module(tdapixbit).
-:-module(tdapixhex).
-:-module(tdapixrgb).
-:-module(predicadosbase).
-:-module(tdaimagen).
+%%--------------- TDA IMAGE ---------------.
+%%--------------- VARIABLES GENERALES ---------------.
+
+%   Width: Corresponde al ancho de la im√°gen
+%   Height: Corresponde al alto de la im√°gen
+%   ListaPixels: Correspendo a una lista de elementos de cualquier tipo de pixel.
+
+%Predicados.
+%%--------------- CONSTRUCTORES ---------------.
+%Constructor image.
+image(Width, Height, ListaPixels,[Width, Height, ListaPixels]).
+
+
+%%--------------- SELECTORES ---------------.
+%Selectorres image
+getWidth([Width|_],Width).
+getHeigth([_|[Height|_]],Height).
+getListaPixels([_|[_|[ListaPixels|_]]],ListaPixels).
+
+%%--------------- PERTENENCIAS ---------------.
+%Predicado isBitmap?
+imagenIsBimap(Img):-
+    getListaPixels(Img,ListaPixeles), validePixelIsBitmap(ListaPixeles).
+
+
+%Predicado isHexmap?
+imagenIsHexmap(Img):-
+    getListaPixels(Img,ListaPixeles), validePixelIsHexmap(ListaPixeles).
+
+
+%Predicado isPixmap? (Pixel RGB).
+imageIsPixmap(Img):-
+    getListaPixels(Img,ListaPixeles), validePixelIsPixmap(ListaPixeles).
+
+
+
+%%--------------- TDA PIXBIT ---------------.
+%%--------------- VARIABLES GENERALES ---------------.
+
+%   X: Corresponde a la coordenada X de una pixbit.
+%   Y: Corresponde a la coordenada Y de una pixbit.
+%   Bit: Corresponde al valor que puede tomar un pixel tipo pixbit, 0 o 1.
+%   Depth: Corresponde a la profundidad del pixel.
+
+
+%Predicados.
+%%--------------- CONSTRUCTOR ---------------.
+pixbit(X, Y, Bit, Depth,[X, Y, Bit, Depth]).
+
+
+%%--------------- SELECTORES ---------------.
+getBit([_|[_|[Bit|_]]],Bit).
+getDepthBit([_|[_|[_|[Depth|_]]]],Depth).
+
+%%--------------- PERTENENCIA ---------------.
+%Predicado isBitmap?
+isBitmap(PixelBit):- getBit(PixelBit, Bit),
+				((Bit == 0 ; Bit == 1);
+                false).
+validePixelIsBitmap([]):- !.
+validePixelIsBitmap([X|Y]):- isBitmap(X), validePixelIsBitmap(Y).
+
+%----- PREDICADOS NECESARIOS PARA OTROS PREDICADOS -----
+pixelRotateHbit(Pixel, Ancho, NewPixel):-
+    getX(Pixel, X),
+    getY(Pixel, Y),
+    getBit(Pixel, Bit),
+    getDepthBit(Pixel, D),
+    (X < Ancho-1, NewX is X + 1; NewX is X - 1),
+    pixbit(NewX, Y, Bit, D, NewPixel).
+
+%HECHO
+pixelsFlipHBit([], _, []):- !.
+pixelsFlipHBit([Pixel|Cola], Ancho, [NewPixel|Cola2]) :-
+    pixelRotateHBit(Pixel, Ancho, NewPixel),
+    pixelsFlipHBit(Cola,Ancho,Cola2).
+
+%HECHO
+pixelRotateVBit(Pixel, Alto, NewPixel):-
+    getX(Pixel, X),
+    getY(Pixel, Y),
+    getBit(Pixel, Bit),
+    getDepthBit(Pixel, D),
+    (Y < Alto-1, NewY is Y + 1; NewY is Y - 1),
+    pixbit(X, NewY, Bit, D, NewPixel).
+
+%HECHO
+pixelsFlipVBit([], _, []):- !.
+pixelsFlipVBit([Pixel|Cola], Alto, [NewPixel|Cola2]) :-
+    pixelRotateVBit(Pixel, Alto, NewPixel),
+    pixelsFlipVBit(Cola,Alto,Cola2).
+
+
+
+%%--------------- TDA PIXBHEX ---------------.
+%%--------------- VARIABLES GENERALES ---------------.
+
+%   X: Corresponde a la coordenada X de una pixhex.
+%   Y: Corresponde a la coordenada Y de una pixhex.
+%   Hex: Corresponde al valor string en hexadecimal del PixelHex.
+%   Depth: Corresponde a la profundidad del pixel.
+
+%%--------------- CONSTRUCTOR ---------------.
+pixhex(X, Y, Hex, Depth,[X, Y, Hex, Depth]).
+
+
+%%--------------- SELECTORES ---------------.
+getHex([_|[_|[Hex|_]]],Hex).
+getDepthHex([_|[_|[_|[Depth|_]]]],Depth).
+
+
+%%--------------- PERTENENCIAS ---------------.
+%Predicado isHexmap?
+isHexmap(PixelHex):- getHex(PixelHex, Hex),
+				string(Hex).
+validePixelIsHexmap([]):- !.
+validePixelIsHexmap([X|Y]):- isHexmap(X), validePixelIsHexmap(Y).
+
+
+%----- PREDICADOS NECESARIOS PARA OTROS PREDICADOS -----
+pixelRotateHhex(Pixel, Ancho, NewPixel):-
+    getX(Pixel, X),
+    getY(Pixel, Y),
+    getHex(Pixel, Hex),
+    getDepthHex(Pixel, D),
+    (X < Ancho-1, NewX is X + 1; NewX is X - 1),
+    pixhex(NewX, Y, Hex, D, NewPixel).
+
+%HECHO
+pixelsFlipHHex([], _, []):- !.
+pixelsFlipHHex([Pixel|Cola], Ancho, [NewPixel|Cola2]) :-
+    pixelRotateHHex(Pixel, Ancho, NewPixel),
+    pixelsFlipHHex(Cola,Ancho,Cola2).
+
+%HECHO
+pixelRotateVHex(Pixel, Alto, NewPixel):-
+    getX(Pixel, X),
+    getY(Pixel, Y),
+    getHex(Pixel, Hex),
+    getDepthHex(Pixel, D),
+    (Y < Alto-1, NewY is Y + 1; NewY is Y - 1),
+    pixhex(X, NewY, Hex, D, NewPixel).
+
+%HECHO
+pixelsFlipVHex([], _, []):- !.
+pixelsFlipVHex([Pixel|Cola], Alto, [NewPixel|Cola2]) :-
+    pixelRotateVHex(Pixel, Alto, NewPixel),
+    pixelsFlipVHex(Cola,Alto,Cola2).
+
+
+
+%--------------- TDA PIXRGB ---------------.
+%%--------------- VARIABLES GENERALES ---------------.
+
+% VARIABLES PIXELS
+%   X: Corresponde a la coordenada X de una pixrgb.
+%   Y: Corresponde a la coordenada Y de una pixrgb.
+%   R: Corresponde al primero valor del pixelRGB, R puede ser un numero del 0 al 255.
+%   G: Corresponde al segundo valor del pixelRGB, G puede ser un numero del 0 al 255.
+%   B: Corresponde al tecer valor del pixelRGB, B puede ser un numero del 0 al 255.
+%   Depth: Corresponde a la profundidad del pixel.
+
+
+%Predicados.
+%%--------------- CONSTRUCTOR ---------------.
+pixrgb(X, Y, R, G, B, Depth,[X, Y, R, G, B, Depth]).
+
+
+%%--------------- SELECTORES ---------------.
+getR([_|[_|[R|_]]],R).
+getG([_|[_|[_|[G|_]]]],G).
+getB([_|[_|[_|[_|[B|_]]]]],B).
+getDepthRgb([_|[_|[_|[_|[_|[Depth|_]]]]]],Depth).
+
+%%--------------- PERTENENCIAS ---------------.
+%Predicado isPixmap? (Pixel RGB).
+isPixmap(PixelRgb):- getR(PixelRgb, R),
+				getG(PixelRgb, G),
+				getB(PixelRgb, B),
+				(R >= 0, R=< 255),
+					(G >= 0, G=< 255),
+					(B >= 0, B=< 255).
+validePixelIsPixmap([]):- !.
+validePixelIsPixmap([X|Y]):- isPixmap(X), validePixelIsPixmap(Y).
+
+
+%----- PREDICADOS NECESARIOS PARA OTROS PREDICADOS -----
+pixelRotateHRgb(Pixel, Ancho, NewPixel):-
+    getX(Pixel, X),
+    getY(Pixel, Y),
+    getR(Pixel, R),
+    getG(Pixel, G),
+    getB(Pixel, B),
+    getDepthRgb(Pixel, D),
+    (X < Ancho-1, NewX is X + 1; NewX is X - 1),
+    pixrgb(NewX, Y, R, G, B, D, NewPixel).
+
+%HECHO
+pixelsFlipHRgb([], _, []):- !.
+pixelsFlipHRgb([Pixel|Cola], Ancho, [NewPixel|Cola2]) :-
+    pixelRotateHRgb(Pixel, Ancho, NewPixel),
+    pixelsFlipHRgb(Cola,Ancho,Cola2).
+
+%HECHO
+pixelRotateVRgb(Pixel, Alto, NewPixel):-
+    getX(Pixel, X),
+    getY(Pixel, Y),
+    getR(Pixel, R),
+    getG(Pixel, G),
+    getB(Pixel, B),
+    getDepthRgb(Pixel, D),
+    (Y < Alto-1, NewY is Y + 1; NewY is Y - 1),
+    pixrgb(X, NewY, R, G, B, D, NewPixel).
+
+%HECHO
+pixelsFlipHVRgb([], _, []):- !.
+pixelsFlipHVRgb([Pixel|Cola], Alto, [NewPixel|Cola2]) :-
+    pixelRotateVRgb(Pixel, Alto, NewPixel),
+    pixelsFlipHVRgb(Cola,Alto,Cola2).
+
+
+
+%--------------- PREDICOS BASE PARA OTROS PREDICADOS ---------------.
+
+%%--------------- SELECTORES ---------------.
+%Generales pixels
+getX([X|_],X).
+getY([_|[Y|_]],Y).
+
+%%--------------- AGREGAR ELEMENTO EN LISTA ---------------.
+appendElement( Elemento, [], [Elemento]).
+appendElement( Elemento, Lista, [Elemento|Lista]).
 
 
 %% Meta Primaria: imageFlip
@@ -17,9 +244,9 @@ imageFlipH(Img, NewImg) :-
     getListaPixels(Img, ListaPixeles),
     getWidth(Img, Ancho),
     getHeigth(Img, Alto),
-    ((imagenIsBimap(Img), pixelsFlipHBit(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels,†NewImg));
-    (imagenIsHexmap(Img), pixelsFlipHHex(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels,†NewImg));
-    (imageIsPixmap(Img), pixelsFlipHRgb(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels,†NewImg))).
+    ((imagenIsBimap(Img), pixelsFlipHBit(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels,NewImg));
+    (imagenIsHexmap(Img), pixelsFlipHHex(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels,NewImg));
+    (imageIsPixmap(Img), pixelsFlipHRgb(ListaPixeles, Ancho, NewListPixels), image(Ancho, Alto, NewListPixels,NewImg))).
 
 
 %% Meta Primaria: imageFlipV
@@ -29,9 +256,9 @@ imageFlipV(Img, NewImg) :-
     getListaPixels(Img, ListaPixeles),
     getWidth(Img, Ancho),
     getHeigth(Img, Alto),
-    ((imagenIsBimap(Img), pixelsFlipVBit(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels,†NewImg));
-    (imagenIsHexmap(Img), pixelsFlipVHex(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels,†NewImg));
-    (imageIsPixmap(Img), pixelsFlipHVRgb(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels,†NewImg))).
+    ((imagenIsBimap(Img), pixelsFlipVBit(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels,NewImg));
+    (imagenIsHexmap(Img), pixelsFlipVHex(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels,NewImg));
+    (imageIsPixmap(Img), pixelsFlipHVRgb(ListaPixeles, Alto, NewListPixels), image(Ancho, Alto, NewListPixels,NewImg))).
 
 
 %% Meta Primaria: imageCrop
@@ -86,14 +313,30 @@ imageRGBToHex([Cabeza|Cola], PixelesHex):-
     dec_to_hex(R, Rojo),
     dec_to_hex(G, Verde),
     dec_to_hex(B, Azul),
-    string_concat(R, G, RG),
-    string_concat(RG, B, RGB),
+    string_concat(Rojo, Verde, RG),
+    string_concat(RG, Azul, RGB),
     pixhex(X, Y, RGB, D, Pixeles),
     append([Pixeles], PixelesAntes, PixelesHex).
 
-dec_to_hex(Value,Atom):-
+%Predicado Complementario, Extraido del sitio WEB https://discourse.swi-prolog.org/t/convert-decimal-number-to-hexadecimal-number-as-atom-with-zero-padding-on-left/2631
+dec_to_hex(Value,Atom) :-
     Value =< 0xFF, !,
-    format(atom(Atom_lower),'|`0t~16r~2|',Value),
+    format(atom(Atom_lower),'~|~`0t~16r~2|',Value),
+    upcase_atom(Atom_lower,Atom).
+dec_to_hex(Value,Atom) :-
+    Value =< 0xFFFF, !,
+    format(atom(Atom_lower),'~|~`0t~16r~4|',Value),
+    upcase_atom(Atom_lower,Atom).
+dec_to_hex(Value,Atom) :-
+    Value =< 0xFFFFFFFF, !,
+    format(atom(Atom_lower),'~|~`0t~16r~8|',Value),
+    upcase_atom(Atom_lower,Atom).
+dec_to_hex(Value,Atom) :-
+    Value =< 0xFFFFFFFFFFFFFFFF,
+    format(atom(Atom_lower),'~|~`0t~16r~16|',Value),
+    upcase_atom(Atom_lower,Atom).
+dec_to_hex(Value,Atom) :-
+    format(atom(Atom_lower),'~16r',Value),
     upcase_atom(Atom_lower,Atom).
 
 
