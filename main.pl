@@ -60,12 +60,12 @@ getDepthBit([_|[_|[_|[Depth|_]]]],Depth).
 %%--------------- PERTENENCIA ---------------.
 %Predicado isBitmap?
 isBitmap(PixelBit):- getBit(PixelBit, Bit),
-				(Bit == 0 ; Bit == 1).
+                    (Bit == 0 ; Bit == 1).
 validePixelIsBitmap([]):- !.
 validePixelIsBitmap([X|Y]):- isBitmap(X), validePixelIsBitmap(Y).
 
 %----- PREDICADOS NECESARIOS PARA OTROS PREDICADOS -----
-pixelRotateHbit(Pixel, Ancho, NewPixel):-
+pixelRotateHBit(Pixel, Ancho, NewPixel):-
     getX(Pixel, X),
     getY(Pixel, Y),
     getBit(Pixel, Bit),
@@ -122,7 +122,7 @@ validePixelIsHexmap([X|Y]):- isHexmap(X), validePixelIsHexmap(Y).
 
 
 %----- PREDICADOS NECESARIOS PARA OTROS PREDICADOS -----
-pixelRotateHhex(Pixel, Ancho, NewPixel):-
+pixelRotateHHex(Pixel, Ancho, NewPixel):-
     getX(Pixel, X),
     getY(Pixel, Y),
     getHex(Pixel, Hex),
@@ -473,3 +473,11 @@ imageToString([], "").
 imageToString(Img, NewImgStr):-
 		image(Ancho, _, ListaPixels, Img),
 		pixelStringBit(ListaPixels, Ancho, 0, NewImgStr).
+
+
+%% Meta Primaria: imageIsCompressed
+%% Descripcion: Predicado que permite saber si una imagen fue comprimida o no.
+imageIsCompressed(Img, Bool):-
+    getWidth(Img, A),
+    getHeigth(Img, L),
+    (A == L, Bool = false; Bool = true).
